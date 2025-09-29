@@ -205,3 +205,27 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Ignore these folders
+LLaMA-Factory/ms_cache/
+LLaMA-Factory/hf_cache/
+LLaMA-Factory/om_cache/
+LLaMA-Factory/cache/
+LLaMA-Factory/config/
+LLaMA-Factory/saves/
+LLaMA-Factory/saves_1/
+LLaMA-Factory/output/
+LLaMA-Factory/wandb/
+LLaMA-Factory/swanlog/
+LLaMA-Factory/generated_predictions.jsonl
+LLaMA-Factory/data/nuscenes/
+LLaMA-Factory/data/nuscenes_2/
+LLaMA-Factory/vllm/
+LLaMA-Factory/torch_study/data/
+LLaMA-Factory/MoVQGAN/pics
+vis_cot/
+vis_traj/
+assets/
+tools/data/metrics/
+*.ckpt
+*.pkl
