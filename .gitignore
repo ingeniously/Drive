@@ -116,7 +116,6 @@ ipython_config.py
 #pdm.toml
 .pdm-python
 .pdm-build/
-
 # pixi
 #   Similar to Pipfile.lock, it is generally recommended to include pixi.lock in version control.
 #pixi.lock
@@ -217,9 +216,13 @@ LLaMA-Factory/saves_1/
 LLaMA-Factory/output/
 LLaMA-Factory/wandb/
 LLaMA-Factory/swanlog/
+LLaMA-Factory/Qwen2-VL-2B-Instruct_tok168041/
+LLaMA-Factory/Qwen2-VL-2B-Instruct/
 LLaMA-Factory/generated_predictions.jsonl
 LLaMA-Factory/data/nuscenes/
 LLaMA-Factory/data/nuscenes_2/
+LLaMA-Factory/data/nuscenes_1/
+LLaMA-Factory/data/nuscenes_3/
 LLaMA-Factory/vllm/
 LLaMA-Factory/torch_study/data/
 LLaMA-Factory/MoVQGAN/pics
@@ -229,3 +232,4 @@ assets/
 tools/data/metrics/
 *.ckpt
 *.pkl
+*.tgz

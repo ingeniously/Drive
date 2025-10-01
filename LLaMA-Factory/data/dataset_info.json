@@ -2,6 +2,33 @@
   "identity": {
     "file_name": "identity.json"
   },
+  "ft1_data": {
+    "file_name": "/media/seonho/34B6BDA8B6BD6ACE/AAAI/project/Drive/LLaMA-Factory/data/ft1_data.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "images": "images",
+      "system": "system"
+  }
+},
+  "train_ft2_cot_tot_motion": {
+    "file_name": "/media/seonho/34B6BDA8B6BD6ACE/AAAI/project/Drive/LLaMA-Factory/data/train_ft2_cot_tot_motion.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "images": "images",
+      "system": "system"
+  }
+},
+  "val_ft2_cot_tot_motion": {
+    "file_name": "/media/seonho/34B6BDA8B6BD6ACE/AAAI/project/Drive/LLaMA-Factory/data/val_ft2_cot_tot_motion.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "images": "images",
+      "system": "system"
+  }
+},
   "alpaca_en_demo": {
     "file_name": "alpaca_en_demo.json"
   },

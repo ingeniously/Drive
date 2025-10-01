@@ -8,11 +8,6 @@ def generate_user_message(data, token, perception_range=20.0, short=True):
     data_dict = data[token]
     camera_types = [
             'CAM_FRONT',
-            #'CAM_FRONT_LEFT',
-            #'CAM_FRONT_RIGHT',
-            #'CAM_BACK',
-            #'CAM_BACK_LEFT',
-            #'CAM_BACK_RIGHT',
         ]
     images_path = []
     for cam in camera_types:
@@ -64,7 +59,7 @@ def generate_assistant_message(data, token, traj_only = False):
     if traj_only:
         assitant_message = ""
     else:
-        assitant_message = generate_chain_of_thoughts(data_dict)
+        assitant_message = generate_three_of_thoughts(data_dict)
 
     x1 = data_dict['gt_ego_fut_trajs'][1][0]
     x2 = data_dict['gt_ego_fut_trajs'][2][0]

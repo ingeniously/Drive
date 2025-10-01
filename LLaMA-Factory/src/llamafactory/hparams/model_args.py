@@ -318,7 +318,6 @@ class ModelArguments(QuantizationArguments, ProcessorArguments, ExportArguments,
             raise ValueError("`split_special_tokens` is only supported for slow tokenizers.")
 
         if self.adapter_name_or_path is not None:  # support merging multiple lora weights
-            import pdb; pdb.set_trace()
             self.adapter_name_or_path = [path.strip() for path in self.adapter_name_or_path.split(",")]
 
         if self.new_special_tokens is not None:  # support multiple special tokens
