@@ -217,6 +217,7 @@ LLaMA-Factory/output/
 LLaMA-Factory/wandb/
 LLaMA-Factory/swanlog/
 LLaMA-Factory/Qwen2-VL-2B-Instruct_tok168041/
+LLaMA-Factory/Qwen2-VL-2B-Instruct_tok168064_resized/
 LLaMA-Factory/Qwen2-VL-2B-Instruct/
 LLaMA-Factory/generated_predictions.jsonl
 LLaMA-Factory/data/nuscenes/
