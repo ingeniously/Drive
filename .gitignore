@@ -221,6 +221,7 @@ LLaMA-Factory/Qwen2-VL-2B-Instruct_tok168064_resized/
 LLaMA-Factory/Qwen2-VL-2B-Instruct/
 LLaMA-Factory/generated_predictions.jsonl
 LLaMA-Factory/data/nuscenes/
+LLaMA-Factory/data/rendered_boxes/
 LLaMA-Factory/data/nuscenes_2/
 LLaMA-Factory/data/nuscenes_1/
 LLaMA-Factory/data/nuscenes_3/

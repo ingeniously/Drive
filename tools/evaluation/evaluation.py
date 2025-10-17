@@ -8,8 +8,33 @@ import os
 import re
 import ast
 import argparse
+import logging
 
-cache_data = pickle.load(open('./create_data/cached_nuscenes_info.pkl', 'rb'))
+logging.basicConfig(level=logging.INFO)
+
+FINAL_COORDS_RE = re.compile(
+    r'Final:\s*\[(.*?)\]',
+    re.DOTALL
+)
+
+PAIR_RE = re.compile(
+    r'\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)'
+)
+
+def extract_final_pairs(pred_text, expected_pairs=6):
+    """
+    Extract only the Final:[(x,y), ...] block.
+    Returns list of (x,y) floats or None if not found / count mismatch.
+    """
+    m = FINAL_COORDS_RE.search(pred_text)
+    if not m:
+        return None, "No 'Final:' block"
+    inner = m.group(1)
+    pairs = PAIR_RE.findall(inner)
+    if len(pairs) != expected_pairs:
+        return None, f"Expected {expected_pairs} pairs, found {len(pairs)}"
+    return [(float(x), float(y)) for x, y in pairs], None
+
 
 def planning_evaluation(pred_trajs_dict, config):
     future_second = 3
@@ -18,14 +43,14 @@ def planning_evaluation(pred_trajs_dict, config):
 
     if config.metric=="uniad":
         from metric_uniad import PlanningMetric
-        with open(Path(os.path.join(config.gt_folder, 'uniad_gt_seg.pkl')),'rb') as f:
+        with open(Path(os.path.join(config.gt_folder, '/media/seonho/34B6BDA8B6BD6ACE/AAAI/project/Test_drive_tot_vla/FSDrive2/tools/data/metrics/uniad_gt_seg.pkl')),'rb') as f:
             gt_occ_map = pickle.load(f)
         for token in gt_occ_map.keys():
             if not isinstance(gt_occ_map[token], torch.Tensor):
                 gt_occ_map[token] = torch.tensor(gt_occ_map[token])
     elif config.metric=="stp3":
         from metric_stp3 import PlanningMetric
-        with open(Path(os.path.join(config.gt_folder, 'stp3_gt_seg.pkl')),'rb') as f:
+        with open(Path(os.path.join(config.gt_folder, '/media/seonho/34B6BDA8B6BD6ACE/AAAI/project/Test_drive_tot_vla/FSDrive2/tools/data/metrics/stp3_gt_seg.pkl')),'rb') as f:
             gt_occ_map = pickle.load(f)
         for token in gt_occ_map.keys():
             if not isinstance(gt_occ_map[token], torch.Tensor):
@@ -37,10 +62,10 @@ def planning_evaluation(pred_trajs_dict, config):
     
     metric_planning_val = PlanningMetric(ts).to(device)     
 
-    with open(Path(os.path.join(config.gt_folder, 'gt_traj.pkl')),'rb') as f:
+    with open(Path(os.path.join(config.gt_folder, '/media/seonho/34B6BDA8B6BD6ACE/AAAI/project/Test_drive_tot_vla/FSDrive2/tools/data/metrics/gt_traj.pkl')),'rb') as f:
         gt_trajs_dict = pickle.load(f)
 
-    with open(Path(os.path.join(config.gt_folder, 'gt_traj_mask.pkl')),'rb') as f:
+    with open(Path(os.path.join(config.gt_folder, '/media/seonho/34B6BDA8B6BD6ACE/AAAI/project/Test_drive_tot_vla/FSDrive2/tools/data/metrics/gt_traj_mask.pkl')),'rb') as f:
         gt_trajs_mask_dict = pickle.load(f)
 
     for index, token in enumerate(tqdm(gt_trajs_dict.keys())):
@@ -51,13 +76,25 @@ def planning_evaluation(pred_trajs_dict, config):
         gt_traj_mask = torch.tensor(gt_trajs_mask_dict[token])
         gt_traj_mask = gt_traj_mask.to(device)
         
-        try:
-            data = re.findall(r'\((\-?\d+\.\d+),(\-?\d+\.\d+)\)', pred_trajs_dict[token])
-            result = [(float(x), float(y)) for x, y in data]
-            output_trajs =  torch.tensor(result)
-            output_trajs = output_trajs.reshape(gt_traj_mask.shape)
-            output_trajs = output_trajs.to(device)
-        except:
+        pred_text = pred_trajs_dict.get(token, "")
+        final_pairs, err = extract_final_pairs(pred_text, expected_pairs=6)
+        if final_pairs is None:
+            logging.warning(f"[Skip] token={token} reason={err}")
+            continue
+
+        # final_pairs: list of 6 (x,y)
+        # Convert to tensor shape (1, 6, 2) or flatten depending on what mask expects
+        output_trajs = torch.tensor(final_pairs, dtype=torch.float32).unsqueeze(0)  # (1,6,2)
+
+        # Now align with mask shape; examine gt_traj_mask shape first:
+        # If gt_traj_mask is (1, 12) (meaning flattened x,y), then:
+        if len(gt_traj_mask.shape) == 2 and gt_traj_mask.shape[1] == 12:
+            output_trajs = output_trajs.reshape(1, 12)
+        elif len(gt_traj_mask.shape) == 3 and gt_traj_mask.shape[1] == 6 and gt_traj_mask.shape[2] == 2:
+            # matches directly, keep (1,6,2)
+            pass
+        else:
+            logging.warning(f"Unexpected mask shape {gt_traj_mask.shape} for token={token}; skipping.")
             continue
         
 
@@ -110,8 +147,8 @@ def planning_evaluation(pred_trajs_dict, config):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Evaluation of planning')
-    parser.add_argument('--method', type=str, help='name of the method being evaluated, used for table print', default='FSDrive')
-    parser.add_argument('--result_file', type=str, help='path to the result file', default='temp_results/refined_trajs_dict_0.0_5.0_1.265_7.89.pkl')
+    parser.add_argument('--method', type=str, help='name of the method being evaluated, used for table print', default='Drive')
+    parser.add_argument('--result_file', type=str, help='path to the result file from match.py', default='eval_traj.json')
     parser.add_argument('--metric', type=str, default='uniad', help='metric to evaluate, either uniad or stp3')
     parser.add_argument('--gt_folder', type=str, default='tools/data/metrics')
     config = parser.parse_args()

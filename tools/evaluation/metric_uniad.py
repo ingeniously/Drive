@@ -8,8 +8,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 from skimage.draw import polygon
-from pytorch_lightning.metrics.metric import Metric
-
+from torchmetrics import Metric
 DEBUG = False
 
 def gen_dx_bx(xbound, ybound, zbound):
@@ -44,10 +43,11 @@ import matplotlib.pyplot as plt
 class PlanningMetric(Metric):
     def __init__(
         self,
-        n_future=6,
-        compute_on_step: bool = False,
+        n_future: int = 6,
     ):
-        super().__init__(compute_on_step=compute_on_step)
+        super().__init__()   # torchmetrics newer versions don't accept compute_on_step
+        self.n_future = int(n_future)
+
         dx, bx, _ = gen_dx_bx([-50.0, 50.0, 0.5], [-50.0, 50.0, 0.5], [-10.0, 10.0, 20.0])
         dx, bx = dx[:2], bx[:2]
         self.dx = nn.Parameter(dx, requires_grad=False)
@@ -60,8 +60,6 @@ class PlanningMetric(Metric):
 
         self.W = 1.85
         self.H = 4.084
-
-        self.n_future = n_future
 
         self.curr_obj_box_col = 0
 

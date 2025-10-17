@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(description="Process trajectories and generate 
 parser.add_argument("--pred_trajs_path", type=str, required=True, 
                     help="Path to the generated predictions JSONL file (e.g., generated_predictions.jsonl)")
 parser.add_argument("--token_traj_path", type=str, required=True, 
-                    help="Path to the token trajectories JSON file (e.g., val_cot_motion_single.json)")
+                    help="Path to the token trajectories JSON file (e.g., val_cot_motion.json)")
 parser.add_argument("--output_dir", type=str, 
                     help="Directory to save the output file. If not provided, uses the same directory as pred_trajs_path.")
 args = parser.parse_args()
